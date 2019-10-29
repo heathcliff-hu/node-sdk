@@ -1044,6 +1044,46 @@ var Upyun = function () {
         throw new Error('upyun - request failed: ' + err.message);
       });
     }
+  }, {
+    key: 'commitProcessingTask',
+    value: function commitProcessingTask(filePath, notifyUrl) {
+      var tasks = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+      var opts = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+
+      var params = {
+        source: filePath,
+        service: this.bucket,
+        tasks: Buffer.from(JSON.stringify(tasks)).toString('base64'),
+        notify_url: notifyUrl,
+        accept: opts.accept || 'json'
+      };
+
+      return this.req.post('/pretreatment/', params);
+    }
+  }, {
+    key: 'getProcessingTaskStatus',
+    value: function getProcessingTaskStatus() {
+      var taskIds = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+      return this.req.get('/status', {
+        params: {
+          service: this.bucket,
+          task_ids: taskIds.join(',')
+        }
+      });
+    }
+  }, {
+    key: 'getProcessingTaskResult',
+    value: function getProcessingTaskResult() {
+      var taskIds = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+      return this.req.get('/result', {
+        params: {
+          service: this.bucket,
+          task_ids: taskIds.join(',')
+        }
+      });
+    }
   }]);
   return Upyun;
 }();

@@ -477,6 +477,37 @@ export default class Upyun {
       throw new Error('upyun - request failed: ' + err.message)
     })
   }
+
+  commitProcessingTask(filePath, notifyUrl, tasks = [], opts = {}) {
+    const params = {
+      source: filePath,
+      service: this.bucket,
+      tasks: Buffer.from(JSON.stringify(tasks)).toString('base64'),
+      notify_url: notifyUrl,
+      accept: opts.accept || 'json',
+    }
+
+    return this.req.post('/pretreatment/', params)
+  }
+
+  getProcessingTaskStatus (taskIds = []) {
+    return this.req.get('/status', {
+      params: {
+        service: this.bucket,
+        task_ids: taskIds.join(',')
+      }
+    })
+  }
+
+  getProcessingTaskResult (taskIds = []) {
+    return this.req.get('/result', {
+      params: {
+        service: this.bucket,
+        task_ids: taskIds.join(',')
+      }
+    })
+  }
+
 }
 
 function isMeta (key) {
